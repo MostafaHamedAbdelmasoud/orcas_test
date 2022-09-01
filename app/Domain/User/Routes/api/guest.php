@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+
 Route::group(['middleware' => 'guest:api'], function () {
     ###CRUD_PLACEHOLDER###
+    Route::post('login', 'Auth\LoginController@login');
 });

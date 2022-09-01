@@ -2,12 +2,15 @@
 
 namespace App\Domain\User\Commands;
 
+use App\Domain\User\Entities\Traits\FetchUsersCommandTrait;
 use App\Domain\User\Entities\User;
+use App\Domain\User\Jobs\CreateFetchedUsersJob;
 use App\Infrastructure\Commands\AbstractCommand\BaseCommand as Command;
 use Illuminate\Support\Facades\Http;
 
 class InjectusersintodatabaseCommand extends Command
 {
+    use  FetchUsersCommandTrait;
     /**
      * The name and signature of the console command.
      *
@@ -40,55 +43,32 @@ class InjectusersintodatabaseCommand extends Command
     public function handle()
     {
         try {
-            $users_1 = Http::get('https://60e1b5fc5a5596001730f1d6.mockapi.io/api/v1/users/users_1');
-            $users_2 = Http::get('https://60e1b5fc5a5596001730f1d6.mockapi.io/api/v1/users/user_2');
+            [$users_1, $users_2] = $this->fetchUserFromEndpoints();
 
+            $users = $this->InjectUsersObjectsIntoArray([$users_1, $users_2]);
 
-            if ($users_1->successful()) {
-                $users_1 = $users_1->json($key = null);
+            $bar = $this->getOutput()->createProgressBar(
+                count($users)
+            );
 
-                $bar = $this->getOutput()->createProgressBar(
-                    count($users_1)
-                );
+            $bar->start();
 
-                $bar->start();
+            $users = collect($users)->chunk(10);
 
-                $users_2 = $users_2->json($key = null);
-                $bar->finish();
+            dispatch(new CreateFetchedUsersJob($users));
 
-                collect($users_1)->map(function ($user, $key) {
-                    $user= json_decode(json_encode($user), FALSE);
+            $bar->finish();
 
-                    if (isset($user->fName)) {
-                        $user->firstName = $user->fName;
-                        $user->lastName = $user->lName;
-                    }
+            $this->info("\n");
 
-                    if ($user->email && $user->avatar && $user->firstName && $user->lastName) {
-                        return User::firstOrCreate([
-                            'email' => $user->email,
-                        ], [
-                            'firstName'=>$user->firstName,
-                            'lastName'=>$user->lastName,
-                            'avatar'=>$user->avatar,
-                        ]);
-                    }
-                    return 0;
+            $this->warn('Successfully Fetched all users!');
 
-                });
-
-
-//                dd($users_1);
-
-                $this->warn('Successfully Fetched all users!');
-
-                $this->info("\n");
-            }
 
         } catch (\Exception $e) {
-            var_dump($e->getMessage());
+            dd($e->getMessage());
         }
         return 00;
     }
+
 
 }

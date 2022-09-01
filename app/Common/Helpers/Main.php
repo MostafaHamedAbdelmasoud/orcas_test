@@ -115,6 +115,22 @@ function getData(Collection $data, $attr)
      return !empty($val) && !is_null($val);
  }
 
+if(! function_exists('paginationPerPage')){
+    /**
+     * get the per page pagination Items
+     * @return int
+     */
+    function paginationPerPage(?int $per_page = 0):int
+    {
+        //get the value if param passed to the function
+        if($per_page > 0)
+            return $per_page;
+        //get the value if per_page request appears in the request Or
+        //The Default value from the config
+        return request()->per_page ?? config('crm.pagination');
+    }
+}
+
  /**
  * isJson
  * @param $args

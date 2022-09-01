@@ -13,7 +13,7 @@ use App\Infrastructure\AbstractRepositories\EloquentRepository;
  */
 class UserRepositoryEloquent extends EloquentRepository implements UserRepository
 {
-    
+
     /**
      * Specify Fields
      *
@@ -22,6 +22,13 @@ class UserRepositoryEloquent extends EloquentRepository implements UserRepositor
     protected $allowedFields = [
         ###allowedFields###
     	###\allowedFields###
+    ];
+
+
+    protected $allowedFilters = [
+        'email',
+        'firstName',
+        'lastName',
     ];
 
     /**
@@ -43,7 +50,7 @@ class UserRepositoryEloquent extends EloquentRepository implements UserRepositor
     {
         return User::class;
     }
-    
+
     /**
      * Specify Model Relationships
      *
