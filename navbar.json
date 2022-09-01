@@ -1,0 +1,17 @@
+[
+    {
+        "name": "users",
+        "icon": "nav-icon fas fa-tachometer-alt",
+        "route": "users.index",
+        "children": [
+            {
+                "name": "list users",
+                "route": "users.index"
+            },
+            {
+                "name": "create new user",
+                "route": "users.create"
+            }
+        ]
+    }
+]
