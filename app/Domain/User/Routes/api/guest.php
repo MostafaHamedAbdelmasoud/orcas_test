@@ -19,5 +19,4 @@ Route::group(['middleware' => 'guest:api'], function () {
     ###CRUD_PLACEHOLDER###
     Route::post('login', 'Auth\LoginController@login');
 
-    Route::get('users/index','UserController@index')->name('users.index');
 });

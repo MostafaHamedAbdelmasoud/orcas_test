@@ -59,7 +59,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $index = $this->userRepository->spatie()->paginate(
-            paginationPerPage($request->per_page??15)
+            paginationPerPage($request->per_page ?? 15)
         );
 
         $this->setData('title', __('main.show-all') . ' ' . __('main.user'));
@@ -70,7 +70,7 @@ class UserController extends Controller
 
         $this->addView("{$this->domainAlias}::{$this->viewPath}.index");
 
-        $this->useCollection(UserResourceCollection::class,'data');
+        $this->useCollection(UserResourceCollection::class, 'data');
 
         return $this->response();
     }
@@ -84,11 +84,11 @@ class UserController extends Controller
     {
         $this->setData('title', __('main.add') . ' ' . __('main.user'), 'web');
 
-        $this->setData('alias', $this->domainAlias,'web');
+        $this->setData('alias', $this->domainAlias, 'web');
 
         $this->addView("{$this->domainAlias}::{$this->viewPath}.create");
 
-        $this->setApiResponse(fn()=> response()->json(['create_your_own_form'=>true]));
+        $this->setApiResponse(fn() => response()->json(['create_your_own_form' => true]));
 
         return $this->response();
     }
@@ -96,21 +96,21 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(UserStoreFormRequest $request)
     {
         $store = $this->userRepository->create($request->validated());
 
-        if($store){
+        if ($store) {
             $this->setData('data', $store);
 
-            $this->redirectRoute("{$this->resourceRoute}.show",[$store->id]);
+            $this->redirectRoute("{$this->resourceRoute}.show", [$store->id]);
             $this->useCollection(UserResource::class, 'data');
-        }else{
+        } else {
             $this->redirectBack();
-            $this->setApiResponse(fn()=> response()->json(['created'=>false]));
+            $this->setApiResponse(fn() => response()->json(['created' => false]));
         }
 
         return $this->response();
@@ -119,20 +119,20 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
     {
         $this->setData('title', __('main.show') . ' ' . __('main.user') . ' : ' . $user->id, 'web');
 
-        $this->setData('alias', $this->domainAlias,'web');
+        $this->setData('alias', $this->domainAlias, 'web');
 
         $this->setData('show', $user);
 
         $this->addView("{$this->domainAlias}::{$this->viewPath}.show");
 
-        $this->useCollection(UserResource::class,'show');
+        $this->useCollection(UserResource::class, 'show');
 
         return $this->response();
     }
@@ -140,20 +140,20 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
     {
         $this->setData('title', __('main.edit') . ' ' . __('main.user') . ' : ' . $user->id, 'web');
 
-        $this->setData('alias', $this->domainAlias,'web');
+        $this->setData('alias', $this->domainAlias, 'web');
 
         $this->setData('edit', $user);
 
         $this->addView("{$this->domainAlias}::{$this->viewPath}.edit");
 
-        $this->useCollection(UserResource::class,'edit');
+        $this->useCollection(UserResource::class, 'edit');
 
         return $this->response();
     }
@@ -161,21 +161,21 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(UserUpdateFormRequest $request, $user)
     {
         $update = $this->userRepository->update($request->validated(), $user);
 
-        if($update){
-            $this->redirectRoute("{$this->resourceRoute}.show",[$update->id]);
+        if ($update) {
+            $this->redirectRoute("{$this->resourceRoute}.show", [$update->id]);
             $this->setData('data', $update);
             $this->useCollection(UserResource::class, 'data');
-        }else{
+        } else {
             $this->redirectBack();
-            $this->setApiResponse(fn()=>response()->json(['updated'=>false],422));
+            $this->setApiResponse(fn() => response()->json(['updated' => false], 422));
         }
 
         return $this->response();
@@ -184,21 +184,21 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $ids = request()->get('ids',[$id]);
+        $ids = request()->get('ids', [$id]);
 
         $delete = $this->userRepository->destroy($ids);
 
-        if($delete){
+        if ($delete) {
             $this->redirectRoute("{$this->resourceRoute}.index");
-            $this->setApiResponse(fn()=>response()->json(['deleted'=>true],200));
-        }else{
+            $this->setApiResponse(fn() => response()->json(['deleted' => true], 200));
+        } else {
             $this->redirectBack();
-            $this->setApiResponse(fn()=>response()->json(['updated'=>false],422));
+            $this->setApiResponse(fn() => response()->json(['updated' => false], 422));
         }
 
         return $this->response();

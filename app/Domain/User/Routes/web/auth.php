@@ -14,9 +14,3 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::resource('/users','UserController');
-	###CRUD_PLACEHOLDER###
-});
-
-Auth::routes();

@@ -3,6 +3,9 @@
 namespace App\Domain\User\Jobs;
 
 use App\Domain\User\Entities\User;
+use App\Domain\User\Traits\CheckUsersInDataBase;
+use App\Domain\User\Traits\InsetUsersInDataBase;
+use App\Domain\User\Traits\UpdateUsersInDataBase;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 class CreateFetchedUsersJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    use CheckUsersInDataBase, InsetUsersInDataBase, UpdateUsersInDataBase;
 
     protected $users;
 
@@ -34,30 +39,63 @@ class CreateFetchedUsersJob implements ShouldQueue
     public function handle()
     {
 
-        foreach ($this->users as $userChunked) {
+        foreach ($this->users as $usersChunked) {
+            $this->iterateOverChunkedUser($usersChunked);
 
-            $userChunked->map(function ($user, $key) {
-
-                $user = json_decode(json_encode($user), FALSE);
-
-                $user = $this->handleUserAttributes($user);
-
-                if ($user->email && $user->avatar && $user->firstName && $user->lastName) {
-                    return User::firstOrCreate([
-                        'email' => $user->email,
-                    ], [
-                        'firstName' => $user->firstName,
-                        'lastName' => $user->lastName,
-                        'avatar' => $user->avatar,
-                    ]);
-                }
-                return 0;
-
-            });
         }
 
     }
 
+    protected $user;
+
+    /**
+     * handle attributes,and create or update users
+     *
+     * @param $usersChunked
+     * @return void
+     */
+    public function iterateOverChunkedUser($usersChunked)
+    {
+        $usersChunked->map(function ($user, $key)  {
+
+            $this->user = $this->convertUserIntoProperObject($user);
+
+            $this->createOrUpdateUserInDB();
+
+            return 0;
+
+        });
+    }
+
+    /**
+     * create or update user depending on email
+     *
+     * @param $user
+     * @return void
+     */
+    public function createOrUpdateUserInDB()
+    {
+        if ($this->user->email && $this->user->avatar && $this->user->firstName && $this->user->lastName) {
+
+            $userInDataBase = $this->getUserByColumn( 'email');
+
+            if (!$userInDataBase->first()) {
+
+                $this->insertNewUser();
+
+            } else {
+
+                $this->updateUserWithNewData($userInDataBase);
+
+            }
+
+        }
+    }
+
+    public function convertUserIntoProperObject($user)
+    {
+        return $this->handleUserAttributes(json_decode(json_encode($user), FALSE));
+    }
 
     /**
      * make casting and check if user has same attributes as database or not
@@ -76,8 +114,4 @@ class CreateFetchedUsersJob implements ShouldQueue
     }
 
 
-//    public function InjectUniqueUserInDatabase($user)
-//    {
-//        DB::table('users')->
-//    }
 }
