@@ -59,7 +59,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $index = $this->userRepository->spatie()->paginate(
-            paginationPerPage($request->per_page)
+            paginationPerPage($request->per_page??15)
         );
 
         $this->setData('title', __('main.show-all') . ' ' . __('main.user'));

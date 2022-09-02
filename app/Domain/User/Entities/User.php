@@ -7,7 +7,6 @@ namespace App\Domain\User\Entities;
 use Illuminate\Notifications\Notifiable;
 use App\Domain\User\Entities\Traits\Relations\UserRelations;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Domain\Users\Repositories\Contracts\TeamRepository;
 use App\Domain\User\Entities\Traits\CustomAttributes\UserAttributes;
 use App\Domain\User\Repositories\Contracts\UserRepository;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
