@@ -33,6 +33,8 @@ Postman collection for login and fetch users
 
 if you want to filter by email use filter[email] as a parameter the same endpoint api/users/index
 
+even you can control in number or users returned by setting a value for per_page parameter
+
 url:
 
 #### api/users/index?per_page=20&filter[email]&filter[lastName]&filter[firstName]
