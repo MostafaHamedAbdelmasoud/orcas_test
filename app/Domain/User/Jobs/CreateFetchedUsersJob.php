@@ -4,20 +4,20 @@ namespace App\Domain\User\Jobs;
 
 use App\Domain\User\Entities\User;
 use App\Domain\User\Traits\CheckUsersInDataBase;
-use App\Domain\User\Traits\InsetUsersInDataBase;
-use App\Domain\User\Traits\UpdateUsersInDataBase;
+use App\Domain\User\Traits\InjectUsersDataInDataBase;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CreateFetchedUsersJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    use CheckUsersInDataBase, InsetUsersInDataBase, UpdateUsersInDataBase;
+    use CheckUsersInDataBase, InjectUsersDataInDataBase;
 
     protected $users;
 
@@ -56,7 +56,7 @@ class CreateFetchedUsersJob implements ShouldQueue
      */
     public function iterateOverChunkedUser($usersChunked)
     {
-        $usersChunked->map(function ($user, $key)  {
+        $usersChunked->map(function ($user, $key) {
 
             $this->user = $this->convertUserIntoProperObject($user);
 
@@ -77,16 +77,28 @@ class CreateFetchedUsersJob implements ShouldQueue
     {
         if ($this->user->email && $this->user->avatar && $this->user->firstName && $this->user->lastName) {
 
-            $userInDataBase = $this->getUserByColumn( 'email');
+            $userInDataBase = $this->getUserByColumn('email')->first();
 
-            if (!$userInDataBase->first()) {
+            try {
+                DB::beginTransaction();
 
-                $this->insertNewUser();
+                if (!$userInDataBase) {
 
-            } else {
+                    $this->insertNewUser();
 
-                $this->updateUserWithNewData($userInDataBase);
+                } else {
 
+                    $this->updateUserWithNewData();
+
+                }
+
+                DB::commit();
+
+            } catch (\Exception $e) {
+
+                Log::info($e->getMessage());
+
+                DB::rollBack();
             }
 
         }

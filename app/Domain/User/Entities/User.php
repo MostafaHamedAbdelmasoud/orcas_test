@@ -64,9 +64,6 @@ class User extends Authenticatable
         'email_verified_at',
     ];
 
-//    protected $attributes = [
-//        'password' => Hash::make(Str::random(40))
-//    ];
 
     /**
      * The attributes that should be hidden for arrays.

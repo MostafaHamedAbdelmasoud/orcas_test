@@ -7,9 +7,13 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## About the task
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+It supports Command to fetch the users from two endpoints
+`` https://60e1b5fc5a5596001730f1d6.mockapi.io/api/v1/users/users_1 ``
+`` https://60e1b5fc5a5596001730f1d6.mockapi.io/api/v1/users/user_2 ``
+ using job to inject chunked users into the database using raw sql statements
+
 
 - [Simple, fast routing engine](https://laravel.com/docs/routing).
 - [Powerful dependency injection container](https://laravel.com/docs/container).
