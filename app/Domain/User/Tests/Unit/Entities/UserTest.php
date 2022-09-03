@@ -2,8 +2,11 @@
 
 namespace App\Domain\User\Tests\Unit\Entities;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
+use Laravel\Passport\Passport;
+use Tests\CreatesApplication;
 use Tests\TestCase;
 use ReflectionClass;
 use App\Domain\User\Entities\User;
@@ -11,18 +14,24 @@ use App\Domain\User\Entities\User;
 class UserTest extends TestCase
 {
 
-    use RefreshDatabase;
+    use  DatabaseMigrations,CreatesApplication;
 
     /** @test */
     public function it_can_display_list_of_customers()
     {
+        $this->withoutExceptionHandling();
+
+        $this->artisan('passport:install');
+
         $user = User::factory()->create();
 
-        $response = $this->json('get', 'api/users/index');
+        Passport::actingAs($user);
+
+        $response = $this->json('get', 'api/users');
 
         $response->assertSuccessful();
 
-        $response->assertSee(e($user->firstName));
+        $response->assertSee(e($this->user->firstName));
     }
 
     /** @test */

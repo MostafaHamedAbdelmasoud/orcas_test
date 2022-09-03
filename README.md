@@ -20,6 +20,10 @@ As well as, writing tests to ensure about the process
 
 `` sail artisan queue:work ``
 
+### run tests
+
+``  ./vendor/bin/phpunit --filter UserTest ``
+
 Postman collection for login and fetch users
 
 

@@ -15,4 +15,3 @@ use Illuminate\Support\Facades\Route;
 
 
 ###CRUD_PLACEHOLDER###
-Route::get('users/index','UserController@index')->name('users.index');

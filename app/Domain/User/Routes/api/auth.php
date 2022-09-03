@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::resource('users','UserController')->except('index');
+    Route::resource('users','UserController');
 	###CRUD_PLACEHOLDER###
 });
